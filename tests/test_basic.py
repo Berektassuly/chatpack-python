@@ -17,10 +17,7 @@ def test_message_creation():
 def test_message_with_metadata():
     """Test creating a Message with metadata"""
     msg = chatpack.Message(
-        "Bob", 
-        "Test message",
-        timestamp="2024-01-15T10:30:00Z",
-        platform="telegram"
+        "Bob", "Test message", timestamp="2024-01-15T10:30:00Z", platform="telegram"
     )
     assert msg.sender == "Bob"
     assert msg.content == "Test message"
@@ -39,11 +36,7 @@ def test_message_to_dict():
 
 def test_filter_config():
     """Test FilterConfig creation"""
-    config = chatpack.FilterConfig(
-        min_length=5,
-        max_length=100,
-        sender="Alice"
-    )
+    config = chatpack.FilterConfig(min_length=5, max_length=100, sender="Alice")
     assert config.min_length == 5
     assert config.max_length == 100
     assert config.sender == "Alice"
@@ -60,10 +53,7 @@ def test_filter_config_builder():
 
 def test_output_config():
     """Test OutputConfig creation"""
-    config = chatpack.OutputConfig(
-        include_timestamps=True,
-        include_platform=True
-    )
+    config = chatpack.OutputConfig(include_timestamps=True, include_platform=True)
     assert config.include_timestamps is True
     assert config.include_platform is True
 
@@ -74,7 +64,7 @@ def test_parser_instantiation():
     whatsapp = chatpack.WhatsAppParser()
     instagram = chatpack.InstagramParser()
     discord = chatpack.DiscordParser()
-    
+
     assert telegram is not None
     assert whatsapp is not None
     assert instagram is not None
@@ -88,7 +78,7 @@ def test_streaming_parser_instantiation():
     whatsapp_stream = chatpack.WhatsAppStreamParser("dummy.txt")
     instagram_stream = chatpack.InstagramStreamParser("dummy.json")
     discord_stream = chatpack.DiscordStreamParser("dummy.json")
-    
+
     assert telegram_stream is not None
     assert whatsapp_stream is not None
     assert instagram_stream is not None
@@ -102,9 +92,9 @@ def test_merge_consecutive():
         chatpack.Message("Alice", "How are you?"),
         chatpack.Message("Bob", "I'm fine!"),
     ]
-    
+
     merged = chatpack.merge_consecutive(messages)
-    
+
     # First two messages should be merged
     assert len(merged) <= len(messages)
     assert merged[0].sender == "Alice"
@@ -117,10 +107,10 @@ def test_apply_filters():
         chatpack.Message("Bob", "Hello there, how are you doing today?"),
         chatpack.Message("Charlie", "Good"),
     ]
-    
+
     config = chatpack.FilterConfig(min_length=10)
     filtered = chatpack.apply_filters(messages, config)
-    
+
     # Only the long message should remain
     assert len(filtered) < len(messages)
     assert all(len(msg.content) >= 10 for msg in filtered)
@@ -129,10 +119,12 @@ def test_apply_filters():
 def test_whatsapp_parse_str():
     """Test parsing WhatsApp content from string"""
     parser = chatpack.WhatsAppParser()
-    content = "[1/15/24, 10:30:45 AM] Alice: Hello\n[1/15/24, 10:31:00 AM] Bob: Hi there"
-    
+    content = (
+        "[1/15/24, 10:30:45 AM] Alice: Hello\n[1/15/24, 10:31:00 AM] Bob: Hi there"
+    )
+
     messages = parser.parse_str(content)
-    
+
     assert len(messages) == 2
     assert messages[0].sender == "Alice"
     assert messages[0].content == "Hello"
@@ -144,7 +136,7 @@ def test_message_repr():
     """Test Message string representation"""
     msg = chatpack.Message("Alice", "This is a very long message content")
     repr_str = repr(msg)
-    
+
     assert "Alice" in repr_str
     assert "Message" in repr_str
 
@@ -153,7 +145,7 @@ def test_message_str():
     """Test Message string conversion"""
     msg = chatpack.Message("Alice", "Hello")
     str_msg = str(msg)
-    
+
     assert "Alice" in str_msg
     assert "Hello" in str_msg
 

@@ -10,25 +10,21 @@ from ._chatpack import (
     PyMessage,
     PyFilterConfig,
     PyOutputConfig,
-    
     # Parsers (classes)
     TelegramParser,
     WhatsAppParser,
     InstagramParser,
     DiscordParser,
-    
     # Streaming parsers (пока закомментированы в Rust, но если они есть в pyi, можно оставить)
     # TelegramStreamParser,
     # WhatsAppStreamParser,
     # InstagramStreamParser,
     # DiscordStreamParser,
-    
     # Convenience functions
     parse_telegram,
     parse_whatsapp,
     parse_instagram,
     parse_discord,
-    
     # Utilities
     merge_consecutive,
     apply_filters,
@@ -49,13 +45,11 @@ __all__ = [
     "PyFilterConfig",
     "OutputConfig",
     "PyOutputConfig",
-    
     # Parsers
     "TelegramParser",
     "WhatsAppParser",
     "InstagramParser",
     "DiscordParser",
-    
     # Functions
     "parse_telegram",
     "parse_whatsapp",
