@@ -31,8 +31,10 @@ jobs:
     - name: Install maturin
       run: pip install maturin pytest pandas
     
-    - name: Build
-      run: maturin develop --release
+    - name: Build and install
+      run: |
+        maturin build --release --out dist
+        pip install dist/chatpack*.whl
     
     - name: Run tests
       run: pytest tests/ -v
