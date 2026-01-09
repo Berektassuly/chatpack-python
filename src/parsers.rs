@@ -1,3 +1,4 @@
+#![allow(clippy::useless_conversion)]
 use crate::types::PyMessage;
 use chatpack::parser::Parser;
 use pyo3::exceptions::PyValueError;

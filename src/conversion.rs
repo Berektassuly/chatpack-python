@@ -28,7 +28,7 @@ pub fn messages_to_csv(messages: &[PyMessage]) -> PyResult<String> {
     //     .collect();
 
     // Write header
-    wtr.write_record(&["sender", "content", "timestamp", "platform"])
+    wtr.write_record(["sender", "content", "timestamp", "platform"])
         .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("CSV error: {}", e)))?;
 
     // Write rows
