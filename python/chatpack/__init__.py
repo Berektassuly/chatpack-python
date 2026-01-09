@@ -3,19 +3,13 @@ chatpack - High-performance chat export parser for Python
 
 Parse and convert chat exports from Telegram, WhatsApp, Instagram, and Discord
 into LLM-friendly formats. Built with Rust for maximum performance.
-
-Example:
-    >>> import chatpack
-    >>> messages = chatpack.parse_telegram("result.json", merge=True)
-    >>> import pandas as pd
-    >>> df = pd.DataFrame([m.to_dict() for m in messages])
 """
 
 from ._chatpack import (
     # Message types
-    Message as PyMessage,
-    FilterConfig as PyFilterConfig,
-    OutputConfig as PyOutputConfig,
+    PyMessage,
+    PyFilterConfig,
+    PyOutputConfig,
     
     # Parsers (classes)
     TelegramParser,
@@ -23,11 +17,11 @@ from ._chatpack import (
     InstagramParser,
     DiscordParser,
     
-    # Streaming parsers
-    TelegramStreamParser,
-    WhatsAppStreamParser,
-    InstagramStreamParser,
-    DiscordStreamParser,
+    # Streaming parsers (пока закомментированы в Rust, но если они есть в pyi, можно оставить)
+    # TelegramStreamParser,
+    # WhatsAppStreamParser,
+    # InstagramStreamParser,
+    # DiscordStreamParser,
     
     # Convenience functions
     parse_telegram,
@@ -40,7 +34,7 @@ from ._chatpack import (
     apply_filters,
 )
 
-# Compatibility aliases
+# Compatibility aliases (Делаем красивые имена для пользователей)
 Message = PyMessage
 FilterConfig = PyFilterConfig
 OutputConfig = PyOutputConfig
@@ -61,12 +55,6 @@ __all__ = [
     "WhatsAppParser",
     "InstagramParser",
     "DiscordParser",
-    
-    # Streaming
-    "TelegramStreamParser",
-    "WhatsAppStreamParser",
-    "InstagramStreamParser",
-    "DiscordStreamParser",
     
     # Functions
     "parse_telegram",

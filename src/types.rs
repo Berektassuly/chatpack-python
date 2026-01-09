@@ -1,6 +1,7 @@
-use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyString};
 use chrono::{DateTime, Utc};
+use pyo3::exceptions::PyValueError;
+use pyo3::prelude::*;
+use pyo3::types::PyDict;
 
 /// Python wrapper for chatpack::Message
 #[pyclass]
@@ -8,13 +9,13 @@ use chrono::{DateTime, Utc};
 pub struct PyMessage {
     #[pyo3(get, set)]
     pub sender: String,
-    
+
     #[pyo3(get, set)]
     pub content: String,
-    
+
     #[pyo3(get, set)]
     pub timestamp: Option<String>,
-    
+
     #[pyo3(get, set)]
     pub platform: Option<String>,
 }
@@ -36,7 +37,7 @@ impl PyMessage {
             platform,
         }
     }
-    
+
     fn __repr__(&self) -> String {
         format!(
             "Message(sender='{}', content='{}...', timestamp={})",
@@ -45,11 +46,11 @@ impl PyMessage {
             self.timestamp.as_deref().unwrap_or("None")
         )
     }
-    
+
     fn __str__(&self) -> String {
         format!("{}: {}", self.sender, self.content)
     }
-    
+
     /// Convert to dictionary
     pub fn to_dict(&self, py: Python) -> PyResult<PyObject> {
         let dict = PyDict::new_bound(py);
@@ -67,16 +68,15 @@ impl PyMessage {
             sender: msg.sender,
             content: msg.content,
             timestamp: msg.timestamp.map(|ts| ts.to_rfc3339()),
-            platform: None, // chatpack::Message does not have platform field
+            platform: None,
         }
     }
-    
+
     pub fn into_rust(self) -> chatpack::Message {
         chatpack::Message {
             sender: self.sender,
             content: self.content,
             timestamp: self.timestamp.and_then(|s| s.parse::<DateTime<Utc>>().ok()),
-            // platform: self.platform, // chatpack::Message does not have platform field
             id: None,
             reply_to: None,
             edited: None,
@@ -90,16 +90,16 @@ impl PyMessage {
 pub struct PyFilterConfig {
     #[pyo3(get, set)]
     pub min_length: Option<usize>,
-    
+
     #[pyo3(get, set)]
     pub max_length: Option<usize>,
-    
+
     #[pyo3(get, set)]
     pub sender: Option<String>,
-    
+
     #[pyo3(get, set)]
     pub date_from: Option<String>,
-    
+
     #[pyo3(get, set)]
     pub date_to: Option<String>,
 }
@@ -123,32 +123,27 @@ impl PyFilterConfig {
             date_to,
         }
     }
-    
-    /// Set minimum message length
+
     fn with_min_length(mut slf: PyRefMut<'_, Self>, length: usize) -> PyRefMut<'_, Self> {
         slf.min_length = Some(length);
         slf
     }
-    
-    /// Set maximum message length
+
     fn with_max_length(mut slf: PyRefMut<'_, Self>, length: usize) -> PyRefMut<'_, Self> {
         slf.max_length = Some(length);
         slf
     }
-    
-    /// Filter by sender name
+
     fn with_sender(mut slf: PyRefMut<'_, Self>, sender: String) -> PyRefMut<'_, Self> {
         slf.sender = Some(sender);
         slf
     }
-    
-    /// Filter messages from this date
+
     fn with_date_from(mut slf: PyRefMut<'_, Self>, date: String) -> PyRefMut<'_, Self> {
         slf.date_from = Some(date);
         slf
     }
-    
-    /// Filter messages until this date
+
     fn with_date_to(mut slf: PyRefMut<'_, Self>, date: String) -> PyRefMut<'_, Self> {
         slf.date_to = Some(date);
         slf
@@ -156,37 +151,36 @@ impl PyFilterConfig {
 }
 
 impl PyFilterConfig {
-    pub fn into_rust(self) -> chatpack::core::filter::FilterConfig {
+    pub fn into_rust(self) -> PyResult<chatpack::core::filter::FilterConfig> {
         let mut config = chatpack::core::filter::FilterConfig::new();
-        
-        // TEMPORARY FIX: methods missing
+
+        // Исправление: метод with_min_length отсутствует в chatpack 0.5,
+        // мы будем фильтровать длину вручную в месте вызова,
+        // или использовать доступные методы.
+        // Пока пропускаем настройку длины здесь.
         /*
         if let Some(len) = self.min_length {
             config = config.with_min_length(len);
         }
-        
-        if let Some(len) = self.max_length {
-            config = config.with_max_length(len);
-        }
-        
+        */
+
         if let Some(sender) = self.sender {
             config = config.with_sender(&sender);
         }
-        
+
         if let Some(date) = self.date_from {
-            if let Ok(cfg) = config.with_date_from(&date) {
-                config = cfg;
-            }
+            config = config
+                .with_date_from(&date)
+                .map_err(|e| PyValueError::new_err(format!("Invalid start date: {}", e)))?;
         }
-        
+
         if let Some(date) = self.date_to {
-            if let Ok(cfg) = config.with_date_to(&date) {
-                config = cfg;
-            }
+            config = config
+                .with_date_to(&date)
+                .map_err(|e| PyValueError::new_err(format!("Invalid end date: {}", e)))?;
         }
-        */
-        
-        config
+
+        Ok(config)
     }
 }
 
@@ -196,7 +190,7 @@ impl PyFilterConfig {
 pub struct PyOutputConfig {
     #[pyo3(get, set)]
     pub include_timestamps: bool,
-    
+
     #[pyo3(get, set)]
     pub include_platform: bool,
 }
@@ -211,14 +205,12 @@ impl PyOutputConfig {
             include_platform,
         }
     }
-    
-    /// Include timestamps in output
+
     fn with_timestamps(mut slf: PyRefMut<'_, Self>) -> PyRefMut<'_, Self> {
         slf.include_timestamps = true;
         slf
     }
-    
-    /// Include platform information in output
+
     fn with_platform(mut slf: PyRefMut<'_, Self>) -> PyRefMut<'_, Self> {
         slf.include_platform = true;
         slf
