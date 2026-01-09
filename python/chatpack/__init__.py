@@ -5,7 +5,7 @@ Parse and convert chat exports from Telegram, WhatsApp, Instagram, and Discord
 into LLM-friendly formats. Built with Rust for maximum performance.
 """
 
-from ._chatpack import (
+from ._chatpack import (  # type: ignore
     # Message types
     PyMessage,
     PyFilterConfig,
