@@ -16,10 +16,10 @@ from ._chatpack import (  # type: ignore
     InstagramParser,
     DiscordParser,
     # Streaming parsers (пока закомментированы в Rust, но если они есть в pyi, можно оставить)
-    # TelegramStreamParser,
-    # WhatsAppStreamParser,
-    # InstagramStreamParser,
-    # DiscordStreamParser,
+    TelegramStreamParser,
+    WhatsAppStreamParser,
+    InstagramStreamParser,
+    DiscordStreamParser,
     # Convenience functions
     parse_telegram,
     parse_whatsapp,
@@ -50,6 +50,11 @@ __all__ = [
     "WhatsAppParser",
     "InstagramParser",
     "DiscordParser",
+    # Streaming Parsers
+    "TelegramStreamParser",
+    "WhatsAppStreamParser",
+    "InstagramStreamParser",
+    "DiscordStreamParser",
     # Functions
     "parse_telegram",
     "parse_whatsapp",
